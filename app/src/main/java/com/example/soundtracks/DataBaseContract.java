@@ -9,10 +9,12 @@ public class DataBaseContract {
         public static final String COLUMN_NAME_LATITUDE = "latitude";
         public static final String COLUMN_NAME_LONGITUDE = "longitude";
         public static final String COLUMN_NAME_RADIUS = "radius";
+        public static final String COLUMN_NAME_NAME = "name";
 
         public static final String CREATE_TABLE = "CREATE TABLE "
                 + TABLE_NAME + " ("
                 + _ID + " INTEGER PRIMARY KEY, "
+                + COLUMN_NAME_NAME + " TEXT, "
                 + COLUMN_NAME_LATITUDE + " TEXT, "
                 + COLUMN_NAME_LONGITUDE + " TEXT, "
                 + COLUMN_NAME_RADIUS + " TEXT)";
@@ -29,7 +31,7 @@ public class DataBaseContract {
                 + _ID + " INTEGER PRIMARY KEY, "
                 + COLUMN_NAME_NAME + " TEXT, "
                 + COLUMN_NAME_ARTIST + " TEXT, "
-                + COLUMN_NAME_BLOB + " TEXT)";
+                + COLUMN_NAME_BLOB + " BLOB)";
     }
 
     public static class PlaylistSongsTable implements BaseColumns {
