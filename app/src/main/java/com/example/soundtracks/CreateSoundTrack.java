@@ -23,6 +23,7 @@ public class CreateSoundTrack extends AppCompatActivity {
     private Button mCancel;
     private Button mSubmit;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +45,7 @@ public class CreateSoundTrack extends AppCompatActivity {
             SQLiteDatabase db = mDatabase.getReadableDatabase();
             String table = mDatabase.tableToString(db, DataBaseContract.PlayListTable.TABLE_NAME);
             MainActivity.log((table));
+            MainActivity.log(Long.toString(mDatabase.lastInsertID));
 
         }
     }
