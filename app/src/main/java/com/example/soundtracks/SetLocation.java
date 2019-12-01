@@ -2,6 +2,8 @@ package com.example.soundtracks;
 
 import androidx.fragment.app.FragmentActivity;
 
+import android.content.Intent;
+import android.media.Session2Command;
 import android.os.Bundle;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -39,9 +41,15 @@ public class SetLocation extends FragmentActivity implements OnMapReadyCallback 
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(LatLng latLng) {
+                Intent result = new Intent();
+                result.putExtra("latitude", Double.toString(latLng.latitude));
+                result.putExtra("longitude", Double.toString(latLng.longitude));
+                setResult(RESULT_OK, result);
+                finish();
+            }
+        });
     }
 }
