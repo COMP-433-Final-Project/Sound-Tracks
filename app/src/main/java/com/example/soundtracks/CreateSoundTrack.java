@@ -1,6 +1,7 @@
 package com.example.soundtracks;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -22,6 +23,12 @@ public class CreateSoundTrack extends AppCompatActivity {
     private EditText mName;
     private Button mCancel;
     private Button mSubmit;
+    private Button mCurrentLocation;
+    private Button mAddLocation;
+    private String mLatitude;
+    private String mLongitude;
+
+    private static final int LOCATION_REQUEST_CODE = 1;
 
 
     @Override
@@ -31,6 +38,8 @@ public class CreateSoundTrack extends AppCompatActivity {
         mCancel = findViewById(R.id.cancel);
         mSubmit = findViewById(R.id.submit);
         mName = findViewById(R.id.name_field);
+        mCurrentLocation = findViewById(R.id.currentLocation);
+        mAddLocation = findViewById(R.id.addLocation);
 
         mDatabase = new DbHelper(this);
 
@@ -47,6 +56,26 @@ public class CreateSoundTrack extends AppCompatActivity {
             MainActivity.log((table));
             MainActivity.log(Long.toString(mDatabase.lastInsertID));
 
+        }else if (view == mAddLocation){
+            Intent mapIntent =  new Intent(getApplicationContext(), SetLocation.class);
+            startActivityForResult(mapIntent, LOCATION_REQUEST_CODE);
+
+
+
+        }else if (view == mCurrentLocation){
+
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == LOCATION_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+
+                mLatitude = data.getStringExtra("latitude");
+                mLongitude = data.getStringExtra("longitude");
+                //Toast.makeText(getApplicationContext(), mLatitude + " " + mLongitude, Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -57,6 +86,7 @@ public class CreateSoundTrack extends AppCompatActivity {
         }
         return editable.toString();
     }
+
 
     private class Saver extends AsyncTask<Void, Void, Boolean> {
         private final String mName;
@@ -93,4 +123,5 @@ public class CreateSoundTrack extends AppCompatActivity {
 
 
 
+//>>>>>>> f179149d3e45d6c2c55db03b4bff816c5db0fafd
 }

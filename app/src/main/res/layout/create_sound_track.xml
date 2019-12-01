@@ -15,12 +15,14 @@
                 android:id="@+id/currentLocation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:onClick="onClick"
                 android:text="Use Current Location" />
 
             <Button
                 android:id="@+id/addLocation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:onClick="onClick"
                 android:text="Add Your Own Location" />
         </TableRow>
 
