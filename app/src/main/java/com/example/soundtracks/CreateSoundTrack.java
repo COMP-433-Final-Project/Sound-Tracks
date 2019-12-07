@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,6 +29,8 @@ public class CreateSoundTrack extends AppCompatActivity {
     private Button mAddLocation;
     private String mLatitude;
     private String mLongitude;
+    private TextView mTextViewLatitude;
+    private TextView mTextViewLongitude;
 
     private static final int LOCATION_REQUEST_CODE = 1;
 
@@ -40,6 +44,8 @@ public class CreateSoundTrack extends AppCompatActivity {
         mName = findViewById(R.id.name_field);
         mCurrentLocation = findViewById(R.id.currentLocation);
         mAddLocation = findViewById(R.id.addLocation);
+        mTextViewLatitude = findViewById(R.id.latitude);
+        mTextViewLongitude = findViewById(R.id.longitude);
 
         mDatabase = new DbHelper(this);
 
@@ -50,7 +56,7 @@ public class CreateSoundTrack extends AppCompatActivity {
             finish();
         }
         else if(view == mSubmit){
-            new Saver(getText(mName), "70", "20", "5").execute();
+            new Saver(getText(mName), mLatitude, mLongitude, "5").execute();
             SQLiteDatabase db = mDatabase.getReadableDatabase();
             String table = mDatabase.tableToString(db, DataBaseContract.PlayListTable.TABLE_NAME);
             MainActivity.log((table));
@@ -74,7 +80,9 @@ public class CreateSoundTrack extends AppCompatActivity {
 
                 mLatitude = data.getStringExtra("latitude");
                 mLongitude = data.getStringExtra("longitude");
-                //Toast.makeText(getApplicationContext(), mLatitude + " " + mLongitude, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), mLatitude + " " + mLongitude, Toast.LENGTH_SHORT).show();
+                mTextViewLatitude.setText("Latitude: " + mLatitude);
+                mTextViewLongitude.setText("Longitude: " + mLongitude);
             }
         }
     }
@@ -120,8 +128,4 @@ public class CreateSoundTrack extends AppCompatActivity {
     }
 
 
-
-
-
-//>>>>>>> f179149d3e45d6c2c55db03b4bff816c5db0fafd
 }
