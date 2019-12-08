@@ -94,8 +94,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     public void onLocationChanged(Location location) {
         mCurrentLatitude = location.getLatitude();
         mCurrentLongitude = location.getLongitude();
-        log("lat: " + Double.toString(mCurrentLatitude));
-        log("long: " + Double.toString(mCurrentLongitude));
+        Toast.makeText(this,"Latitude: " + Double.toString(mCurrentLatitude) + "Long: " + Double.toString(mCurrentLongitude),
+                Toast.LENGTH_SHORT);
 
     }
 

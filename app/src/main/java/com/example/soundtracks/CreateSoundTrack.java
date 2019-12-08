@@ -62,14 +62,14 @@ public class CreateSoundTrack extends AppCompatActivity {
             MainActivity.log((table));
             MainActivity.log(Long.toString(mDatabase.lastInsertID));
 
-        }else if (view == mAddLocation){
+        }
+        else if (view == mAddLocation){
             Intent mapIntent =  new Intent(getApplicationContext(), SetLocation.class);
             startActivityForResult(mapIntent, LOCATION_REQUEST_CODE);
-
-
-
-        }else if (view == mCurrentLocation){
-
+        }
+        else if (view == mCurrentLocation){
+            mLatitude = Double.toString(MainActivity.mCurrentLatitude);
+            mLongitude = Double.toString(MainActivity.mCurrentLongitude);
         }
     }
 

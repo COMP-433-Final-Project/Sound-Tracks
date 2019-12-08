@@ -14,8 +14,6 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAKA7j0y-l2TDHSUK-hhID0eV4otImejFk" />
-            //Gavins Key
-            // android:value="AIzaSyCZ7xUB7EwAHSyxAig8X1jswN6K9F_QC7U" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
