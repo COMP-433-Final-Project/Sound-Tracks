@@ -17,6 +17,7 @@ public class DbHelper extends SQLiteOpenHelper {
     // VERSION 4 removes it, since we need to change our query to support it
     private static final int VERSION = 4;
     private static final String NAME = "Contract.db";
+    public long lastInsertID;
 
     public DbHelper(@Nullable Context context) {
         super(context, NAME, null, VERSION);
@@ -46,6 +47,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
         if(rowId != -1){
             MainActivity.log("success insert");
+            lastInsertID = rowId;
             return true;
         }
         else{

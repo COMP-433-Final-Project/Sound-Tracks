@@ -16,6 +16,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class SetLocation extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private double mLatitide;
+    private double mLongitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +27,9 @@ public class SetLocation extends FragmentActivity implements OnMapReadyCallback 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        mLatitide = MainActivity.mCurrentLatitude;
+        mLongitude = MainActivity.mCurrentLongitude;
     }
 
 
@@ -40,7 +45,9 @@ public class SetLocation extends FragmentActivity implements OnMapReadyCallback 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
+        LatLng latLng = new LatLng(mLatitide, mLongitude);
+        float zoom = 15f;
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng latLng) {
@@ -52,4 +59,5 @@ public class SetLocation extends FragmentActivity implements OnMapReadyCallback 
             }
         });
     }
+
 }
