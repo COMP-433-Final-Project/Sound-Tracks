@@ -1,10 +1,7 @@
 package com.example.soundtracks;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -17,8 +14,19 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+import com.google.android.gms.common.api.GoogleApi;
+import com.google.android.gms.location.GeofencingClient;
+import com.google.android.gms.location.LocationServices;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements LocationListener {
+
 
     public static void log(String msg) {
         Log.d("THOMAS", msg);
@@ -113,4 +121,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     public void onProviderDisabled(String s) {
 
     }
+
+
 }

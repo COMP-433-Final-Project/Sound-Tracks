@@ -1,5 +1,6 @@
 package com.example.soundtracks;
 
+import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -16,9 +17,18 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.GeofencingClient;
+import com.google.android.gms.location.GeofencingRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+
 import java.util.ArrayList;
+import java.util.List;
 
 public class CreateSoundTrack extends AppCompatActivity {
     private DbHelper mDatabase;
@@ -32,6 +42,12 @@ public class CreateSoundTrack extends AppCompatActivity {
     private TextView mTextViewLatitude;
     private TextView mTextViewLongitude;
 
+    private PendingIntent geofencePendingIntent;
+    private GeofencingClient geofencingClient;
+    public static List geofenceList = new ArrayList();
+
+
+    private static final int GEOFENCE_RADIUS_IN_METERS = 5;
     private static final int LOCATION_REQUEST_CODE = 1;
 
 
@@ -47,6 +63,8 @@ public class CreateSoundTrack extends AppCompatActivity {
         mTextViewLatitude = findViewById(R.id.latitude);
         mTextViewLongitude = findViewById(R.id.longitude);
 
+        geofencingClient = LocationServices.getGeofencingClient(this);
+
         mDatabase = new DbHelper(this);
 
     }
@@ -61,6 +79,39 @@ public class CreateSoundTrack extends AppCompatActivity {
             String table = mDatabase.tableToString(db, DataBaseContract.PlayListTable.TABLE_NAME);
             MainActivity.log((table));
             MainActivity.log(Long.toString(mDatabase.lastInsertID));
+
+
+
+            geofenceList.add(new Geofence.Builder()
+                    // Set the request ID of the geofence. This is a string to identify this
+                    // geofence.
+                    .setRequestId(getText(mName))
+
+                    .setCircularRegion(
+                            Double.parseDouble(mLatitude),
+                            Double.parseDouble(mLongitude),
+                            GEOFENCE_RADIUS_IN_METERS
+                    )
+                    .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                    .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
+                            Geofence.GEOFENCE_TRANSITION_EXIT)
+                    .build());
+
+            geofencingClient.addGeofences(getGeofencingRequest(), getGeofencePendingIntent())
+                    .addOnSuccessListener(this, new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            // Geofences added
+                            // ...
+                        }
+                    })
+                    .addOnFailureListener(this, new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            // Failed to add geofences
+                            // ...
+                        }
+                    });
 
         }else if (view == mAddLocation){
             Intent mapIntent =  new Intent(getApplicationContext(), SetLocation.class);
@@ -125,6 +176,26 @@ public class CreateSoundTrack extends AppCompatActivity {
         protected Boolean doInBackground(Void... voids) {
             return mDatabase.insertPlaylist(mName, mLatitude, mLongitude, mRadius);
         }
+    }
+
+    private PendingIntent getGeofencePendingIntent() {
+        // Reuse the PendingIntent if we already have it.
+        if (geofencePendingIntent != null) {
+            return geofencePendingIntent;
+        }
+        Intent intent = new Intent(this, GeofenceBroadcastReceiver.class);
+        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when
+        // calling addGeofences() and removeGeofences().
+        geofencePendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.
+                FLAG_UPDATE_CURRENT);
+        return geofencePendingIntent;
+    }
+
+    private GeofencingRequest getGeofencingRequest() {
+        GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
+        builder.addGeofences(geofenceList);
+        return builder.build();
     }
 
 
