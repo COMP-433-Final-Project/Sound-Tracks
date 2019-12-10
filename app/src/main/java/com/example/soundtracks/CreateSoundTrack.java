@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.GeofencingRequest;
@@ -36,6 +37,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +69,15 @@ public class CreateSoundTrack extends AppCompatActivity {
     private FusedLocationProviderClient fusedLocationClient;
 
 
+    private PendingIntent geofencePendingIntent;
+    private GeofencingClient geofencingClient;
+    public static List geofenceList = new ArrayList();
+
+
+    private static final int GEOFENCE_RADIUS_IN_METERS = 5;
+    private static final int LOCATION_REQUEST_CODE = 1;
+
+
     private static final int GEOFENCE_RADIUS_IN_METERS = 15;
     private static final int LOCATION_REQUEST_CODE = 1;
 
@@ -82,6 +96,7 @@ public class CreateSoundTrack extends AppCompatActivity {
         list = findViewById(R.id.list);
 
         geofencingClient = LocationServices.getGeofencingClient(this);
+
         mDatabase = new DbHelper(this);
 
         getNames();
@@ -122,6 +137,7 @@ public class CreateSoundTrack extends AppCompatActivity {
                     // geofence.
                     .setRequestId(mSongSelected)
 
+
                     .setCircularRegion(
                             Double.parseDouble(mLatitude),
                             Double.parseDouble(mLongitude),
@@ -138,7 +154,9 @@ public class CreateSoundTrack extends AppCompatActivity {
                         public void onSuccess(Void aVoid) {
                             // Geofences added
                             // ...
+
                             MainActivity.log("added geofence");
+
                         }
                     })
                     .addOnFailureListener(this, new OnFailureListener() {
@@ -149,8 +167,12 @@ public class CreateSoundTrack extends AppCompatActivity {
                         }
                     });
 
+
         }
         else if (view == mAddLocation){
+
+        }else if (view == mAddLocation){
+
             Intent mapIntent =  new Intent(getApplicationContext(), SetLocation.class);
             startActivityForResult(mapIntent, LOCATION_REQUEST_CODE);
         }
@@ -274,10 +296,9 @@ public class CreateSoundTrack extends AppCompatActivity {
         return builder.build();
     }
 
+
     private void setmLatLng(String aLat, String aLong) {
         mLatitude = aLat;
         mLongitude = aLong;
     }
-
-
 }
