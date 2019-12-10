@@ -6,9 +6,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.location.LocationListener;
@@ -17,10 +19,12 @@ import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
@@ -28,12 +32,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements LocationListener {
 
     public static void log(String msg) {
         Log.d("THOMAS", msg);
     }
+    public static void makeToast(String msg, Context c){Toast.makeText(c, msg,Toast.LENGTH_SHORT).show();}
     public static double mCurrentLatitude;
     public static double mCurrentLongitude;
     Button soundTracks;
@@ -42,9 +48,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private LocationManager mLocationManager;
     private static final int REQUEST_CODE = 73;
     private static String mPath;
-    MediaPlayer mp;
+    private static MediaPlayer mp;
     private DbHelper mDatabase;
     private boolean mFirstTime = true;
+    ArrayList<String> mArrayList;
+    private static Resources r;
+    private static TextView mCurrentSong;
 
 
 
@@ -56,11 +65,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         soundTracks = findViewById(R.id.soundTracks);
         mPlay = findViewById(R.id.play);
         mPause = findViewById(R.id.pause);
+        mCurrentSong = findViewById(R.id.currentSong);
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        Resources r = getResources();
-        int musicId = r.getIdentifier("phoenix", "raw", "com.example.soundtracks");
-        mp = MediaPlayer.create(this, musicId);
+        r = getResources();
+
         mDatabase = new DbHelper(this);
+        mArrayList = new ArrayList<>();
+
 
 
         if (ContextCompat.checkSelfPermission(this,
@@ -98,6 +109,19 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 mp.start();
             }
         }
+    }
+
+    public static void playSong(Context context, String name){
+        log(name);
+        mCurrentSong.setText(name);
+        int musicId = r.getIdentifier(name, "raw", "com.example.soundtracks");
+        mp = MediaPlayer.create(context, musicId);
+        mp.start();
+
+    }
+
+    public static void stopSong(){
+        mp.stop();
     }
 
     @Override

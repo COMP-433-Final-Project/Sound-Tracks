@@ -3,11 +3,13 @@ package com.example.soundtracks;
 import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Location;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -118,7 +120,7 @@ public class CreateSoundTrack extends AppCompatActivity {
             geofenceList.add(new Geofence.Builder()
                     // Set the request ID of the geofence. This is a string to identify this
                     // geofence.
-                    .setRequestId(getText(mName))
+                    .setRequestId(mSongSelected)
 
                     .setCircularRegion(
                             Double.parseDouble(mLatitude),
@@ -136,6 +138,7 @@ public class CreateSoundTrack extends AppCompatActivity {
                         public void onSuccess(Void aVoid) {
                             // Geofences added
                             // ...
+                            MainActivity.log("added geofence");
                         }
                     })
                     .addOnFailureListener(this, new OnFailureListener() {

@@ -37,11 +37,11 @@ public class DbHelper extends SQLiteOpenHelper {
 
         sqLiteDatabase.execSQL("INSERT INTO " + DataBaseContract.SongTable.TABLE_NAME + " (" + DataBaseContract.SongTable.COLUMN_NAME_NAME
                 + ", " + DataBaseContract.SongTable.COLUMN_NAME_ARTIST + ", " + DataBaseContract.SongTable.COLUMN_NAME_SONG + ")"
-                + " VALUES ('Phoenix', 'Cailin Russo', 'phoenix')");
+                + " VALUES ('phoenix', 'Cailin Russo', 'phoenix')");
 
         sqLiteDatabase.execSQL("INSERT INTO " + DataBaseContract.SongTable.TABLE_NAME + " (" + DataBaseContract.SongTable.COLUMN_NAME_NAME
                 + ", " + DataBaseContract.SongTable.COLUMN_NAME_ARTIST + ", " + DataBaseContract.SongTable.COLUMN_NAME_SONG + ")"
-                + " VALUES ('GoodByes', 'Post Malone', 'goodbyes')");
+                + " VALUES ('goodbyes', 'Post Malone', 'goodbyes')");
 
 
     }

@@ -3,6 +3,8 @@ package com.example.soundtracks;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.media.MediaPlayer;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -15,9 +17,11 @@ import java.util.MissingFormatArgumentException;
 import static android.content.ContentValues.TAG;
 
 public class GeofenceBroadcastReceiver extends BroadcastReceiver {
+    Context context;
     // ...
     public void onReceive(Context context, Intent intent) {
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
+        context = context;
         MainActivity.log("broadcast received");
         if (geofencingEvent.hasError()) {
 //            String errorMessage = GeofenceErrorMessages.getErrorString(this,
@@ -37,15 +41,20 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
             // Get the geofences that were triggered. A single event can trigger
             // multiple geofences.
             List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
-
+            String playListName = triggeringGeofences.get(0).getRequestId();
             if(geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER){
 
-                MainActivity.log(triggeringGeofences.get(0).getRequestId() + " entered");
+
+                MainActivity.log(playListName + " entered");
+                MainActivity.makeToast(playListName + " entered", context);
+                MainActivity.playSong(context, playListName);
             }
 
             if(geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT){
 
                 MainActivity.log(triggeringGeofences.get(0).getRequestId() + " exited");
+                MainActivity.makeToast(playListName + " exited", context);
+                MainActivity.stopSong();
             }
 
 
@@ -65,6 +74,5 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
 //                    geofenceTransition));
         }
     }
-
 
 }
