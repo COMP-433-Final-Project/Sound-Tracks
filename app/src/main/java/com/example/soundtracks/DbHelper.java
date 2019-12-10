@@ -10,6 +10,8 @@ import android.graphics.Bitmap;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
+import java.io.File;
+
 public class DbHelper extends SQLiteOpenHelper {
 
     // VERSION 2 adds the appearance table
@@ -18,21 +20,33 @@ public class DbHelper extends SQLiteOpenHelper {
     private static final int VERSION = 4;
     private static final String NAME = "Contract.db";
     public long lastInsertID;
+    public long lastInsertSongID;
 
-    public DbHelper(@Nullable Context context) {
-        super(context, NAME, null, VERSION);
-    }
+
+    public DbHelper(@Nullable Context context) { super(context, NAME, null, VERSION); }
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
+
         sqLiteDatabase.execSQL(
                 DataBaseContract.PlayListTable.CREATE_TABLE);
         sqLiteDatabase.execSQL(
                 DataBaseContract.SongTable.CREATE_TABLE);
         sqLiteDatabase.execSQL(
                 DataBaseContract.PlaylistSongsTable.CREATE_TABLE);
+
+        sqLiteDatabase.execSQL("INSERT INTO " + DataBaseContract.SongTable.TABLE_NAME + " (" + DataBaseContract.SongTable.COLUMN_NAME_NAME
+                + ", " + DataBaseContract.SongTable.COLUMN_NAME_ARTIST + ", " + DataBaseContract.SongTable.COLUMN_NAME_SONG + ")"
+                + " VALUES ('phoenix', 'Cailin Russo', 'phoenix')");
+
+        sqLiteDatabase.execSQL("INSERT INTO " + DataBaseContract.SongTable.TABLE_NAME + " (" + DataBaseContract.SongTable.COLUMN_NAME_NAME
+                + ", " + DataBaseContract.SongTable.COLUMN_NAME_ARTIST + ", " + DataBaseContract.SongTable.COLUMN_NAME_SONG + ")"
+                + " VALUES ('goodbyes', 'Post Malone', 'goodbyes')");
+
+
     }
 
+    //insert playlist
     @WorkerThread
     public boolean insertPlaylist(String name, String latitude, String longitude, String radius) {
         return insertPlaylist(getWritableDatabase(), name, latitude, longitude, radius);

@@ -3,16 +3,30 @@ package com.example.soundtracks;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.media.MediaPlayer;
+import android.util.Log;
+import android.widget.Toast;
+
 import android.util.Log;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
 
 import java.util.List;
+import java.util.MissingFormatArgumentException;
+
 
 import static android.content.ContentValues.TAG;
 
 public class GeofenceBroadcastReceiver extends BroadcastReceiver {
+    Context context;
+    // ...
+    public void onReceive(Context context, Intent intent) {
+        GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
+        context = context;
+        MainActivity.log("broadcast received");
+
     // ...
     public void onReceive(Context context, Intent intent) {
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
@@ -35,6 +49,23 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
             // multiple geofences.
             List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
 
+            String playListName = triggeringGeofences.get(0).getRequestId();
+            if(geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER){
+
+
+                MainActivity.log(playListName + " entered");
+                MainActivity.makeToast(playListName + " entered", context);
+                MainActivity.playSong(context, playListName);
+            }
+
+            if(geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT){
+
+                MainActivity.log(triggeringGeofences.get(0).getRequestId() + " exited");
+                MainActivity.makeToast(playListName + " exited", context);
+                MainActivity.stopSong();
+            }
+
+
 
             // Get the transition details as a String.
 //            String geofenceTransitionDetails = getGeofenceTransitionDetails(
@@ -52,4 +83,5 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
 //                    geofenceTransition));
         }
     }
+
 }

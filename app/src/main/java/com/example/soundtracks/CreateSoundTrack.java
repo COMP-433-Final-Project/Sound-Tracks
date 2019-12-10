@@ -3,29 +3,44 @@ package com.example.soundtracks;
 import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.location.Location;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +56,18 @@ public class CreateSoundTrack extends AppCompatActivity {
     private String mLongitude;
     private TextView mTextViewLatitude;
     private TextView mTextViewLongitude;
+    private ArrayList<String> mArrayList;
+    private ListView list;
+    private boolean mSelected = false;
+    private int mPosition;
+    private String mSongSelected;
+
+    private PendingIntent geofencePendingIntent;
+    private GeofencingClient geofencingClient;
+    public static List<Geofence> geofenceList = new ArrayList<Geofence>();
+
+    private FusedLocationProviderClient fusedLocationClient;
+
 
     private PendingIntent geofencePendingIntent;
     private GeofencingClient geofencingClient;
@@ -50,6 +77,9 @@ public class CreateSoundTrack extends AppCompatActivity {
     private static final int GEOFENCE_RADIUS_IN_METERS = 5;
     private static final int LOCATION_REQUEST_CODE = 1;
 
+
+    private static final int GEOFENCE_RADIUS_IN_METERS = 15;
+    private static final int LOCATION_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,10 +92,14 @@ public class CreateSoundTrack extends AppCompatActivity {
         mAddLocation = findViewById(R.id.addLocation);
         mTextViewLatitude = findViewById(R.id.latitude);
         mTextViewLongitude = findViewById(R.id.longitude);
+        mArrayList  = new ArrayList<>();
+        list = findViewById(R.id.list);
 
         geofencingClient = LocationServices.getGeofencingClient(this);
 
         mDatabase = new DbHelper(this);
+
+        getNames();
 
     }
 
@@ -74,6 +108,23 @@ public class CreateSoundTrack extends AppCompatActivity {
             finish();
         }
         else if(view == mSubmit){
+            if(mName.getText().toString().isEmpty()){
+                Toast.makeText(getApplicationContext(), "Please Enter a Name", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if(mLatitude.isEmpty() || mLongitude.isEmpty()){
+                Toast.makeText(getApplicationContext(), "Please Select a Location", Toast.LENGTH_SHORT).show();
+            }
+
+
+            // TODO: Check through database to see if new location is within geofence radius of any existing geofences
+//            for(Geofence geofence : geofenceList){
+//                if(Location.distanceBetween(Double.parseDouble(mLatitude), Double.parseDouble(mLongitude),
+//                geofence.)
+//            }
+
+            //if(mLatitude.)
             new Saver(getText(mName), mLatitude, mLongitude, "5").execute();
             SQLiteDatabase db = mDatabase.getReadableDatabase();
             String table = mDatabase.tableToString(db, DataBaseContract.PlayListTable.TABLE_NAME);
@@ -81,11 +132,11 @@ public class CreateSoundTrack extends AppCompatActivity {
             MainActivity.log(Long.toString(mDatabase.lastInsertID));
 
 
-
             geofenceList.add(new Geofence.Builder()
                     // Set the request ID of the geofence. This is a string to identify this
                     // geofence.
-                    .setRequestId(getText(mName))
+                    .setRequestId(mSongSelected)
+
 
                     .setCircularRegion(
                             Double.parseDouble(mLatitude),
@@ -103,6 +154,9 @@ public class CreateSoundTrack extends AppCompatActivity {
                         public void onSuccess(Void aVoid) {
                             // Geofences added
                             // ...
+
+                            MainActivity.log("added geofence");
+
                         }
                     })
                     .addOnFailureListener(this, new OnFailureListener() {
@@ -113,15 +167,59 @@ public class CreateSoundTrack extends AppCompatActivity {
                         }
                     });
 
-        }else if (view == mAddLocation){
-            Intent mapIntent =  new Intent(getApplicationContext(), SetLocation.class);
-            startActivityForResult(mapIntent, LOCATION_REQUEST_CODE);
-
-
-
-        }else if (view == mCurrentLocation){
 
         }
+        else if (view == mAddLocation){
+
+        }else if (view == mAddLocation){
+
+            Intent mapIntent =  new Intent(getApplicationContext(), SetLocation.class);
+            startActivityForResult(mapIntent, LOCATION_REQUEST_CODE);
+        }
+        else if (view == mCurrentLocation){
+            mLatitude = Double.toString(MainActivity.mCurrentLatitude);
+            mLongitude = Double.toString(MainActivity.mCurrentLongitude);
+            mTextViewLatitude.setText("Latitude: " + mLatitude);
+            mTextViewLongitude.setText("Longitude: " + mLongitude);
+        }
+    }
+    public void getNames(){
+        SQLiteDatabase db = mDatabase.getReadableDatabase();
+        Cursor c = db.rawQuery("SELECT * FROM " + DataBaseContract.SongTable.TABLE_NAME,null);
+        if (c.moveToFirst()){
+            do {
+                // Passing values
+                String column1 = c.getString(1);
+                // Do something Here with values
+
+                mArrayList.add(column1);
+
+            } while(c.moveToNext());
+        }
+        c.close();
+        db.close();
+
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mArrayList);
+        list.setAdapter(arrayAdapter);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String clickedItem=(String) list.getItemAtPosition(position);
+
+                if(!mSelected){
+                    list.getChildAt(position).setBackgroundColor(Color.LTGRAY);
+                    mSelected = true;
+                    mPosition = position;
+                    mSongSelected = clickedItem;
+                }else if(mSelected && mPosition == position){
+                    list.getChildAt(position).setBackgroundColor(Color.WHITE);
+                    mSelected = false;
+                    mPosition = 0;
+
+                }
+               // Toast.makeText(CreateSoundTrack.this,clickedItem,Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     @Override
@@ -132,8 +230,8 @@ public class CreateSoundTrack extends AppCompatActivity {
                 mLatitude = data.getStringExtra("latitude");
                 mLongitude = data.getStringExtra("longitude");
                 Toast.makeText(getApplicationContext(), mLatitude + " " + mLongitude, Toast.LENGTH_SHORT).show();
-                mTextViewLatitude.setText("Latitude: " + mLatitude);
-                mTextViewLongitude.setText("Longitude: " + mLongitude);
+                mTextViewLatitude.setText("Latitude: " + mLatitude.substring(0, 9));
+                mTextViewLongitude.setText("Longitude: " + mLongitude.substring(0, 9));
             }
         }
     }
@@ -199,4 +297,8 @@ public class CreateSoundTrack extends AppCompatActivity {
     }
 
 
+    private void setmLatLng(String aLat, String aLong) {
+        mLatitude = aLat;
+        mLongitude = aLong;
+    }
 }

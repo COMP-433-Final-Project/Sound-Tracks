@@ -1,18 +1,32 @@
 package com.example.soundtracks;
 
+import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
+import android.Manifest;
+import android.content.Context;
 import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.MediaPlayer;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.common.api.GoogleApi;
 import com.google.android.gms.location.GeofencingClient;
@@ -25,17 +39,36 @@ import androidx.core.content.ContextCompat;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity implements LocationListener {
 
 
     public static void log(String msg) {
         Log.d("THOMAS", msg);
     }
+    public static void makeToast(String msg, Context c){Toast.makeText(c, msg,Toast.LENGTH_SHORT).show();}
     public static double mCurrentLatitude;
     public static double mCurrentLongitude;
     Button soundTracks;
+    Button mPlay;
+    Button mPause;
     private LocationManager mLocationManager;
     private static final int REQUEST_CODE = 73;
+    private static String mPath;
+    private static MediaPlayer mp;
+    private DbHelper mDatabase;
+    private boolean mFirstTime = true;
+    ArrayList<String> mArrayList;
+    private static Resources r;
+    private static TextView mCurrentSong;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +76,16 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         setContentView(R.layout.activity_main);
 
         soundTracks = findViewById(R.id.soundTracks);
+        mPlay = findViewById(R.id.play);
+        mPause = findViewById(R.id.pause);
+        mCurrentSong = findViewById(R.id.currentSong);
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        r = getResources();
+
+        mDatabase = new DbHelper(this);
+        mArrayList = new ArrayList<>();
+
+
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -56,18 +98,43 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             }else{
                 Toast.makeText(this, "Check permission settings", Toast.LENGTH_SHORT);
             }
-
-
         }
+
+
     }
 
 
     public void onClick(View view){
+
         if(view == soundTracks){
             Intent intent = new Intent(this, SoundTrackMenu.class);
             intent.putExtra(Intent.EXTRA_TEXT, "text from an intent");
             startActivity(intent);
+
         }
+        else if(view == mPlay){
+            mp.start();
+        }
+        else if(view == mPause){
+            if(mp.isPlaying()) {
+                mp.pause();
+            } else {
+                mp.start();
+            }
+        }
+    }
+
+    public static void playSong(Context context, String name){
+        log(name);
+        mCurrentSong.setText(name);
+        int musicId = r.getIdentifier(name, "raw", "com.example.soundtracks");
+        mp = MediaPlayer.create(context, musicId);
+        mp.start();
+
+    }
+
+    public static void stopSong(){
+        mp.stop();
     }
 
     @Override
@@ -102,8 +169,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     public void onLocationChanged(Location location) {
         mCurrentLatitude = location.getLatitude();
         mCurrentLongitude = location.getLongitude();
-        log("lat: " + Double.toString(mCurrentLatitude));
-        log("long: " + Double.toString(mCurrentLongitude));
+        Toast.makeText(this,"Latitude: " + Double.toString(mCurrentLatitude) + "Long: " + Double.toString(mCurrentLongitude),
+                Toast.LENGTH_SHORT);
 
     }
 
@@ -122,5 +189,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
     }
 
-
 }
+
+

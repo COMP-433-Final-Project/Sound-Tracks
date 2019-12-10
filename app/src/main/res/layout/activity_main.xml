@@ -12,10 +12,10 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/textView3"
-                android:layout_width="match_parent"
+                android:id="@+id/currentSong"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView" />
+                android:textSize="30sp" />
         </TableRow>
 
         <TableRow
@@ -23,16 +23,18 @@
             android:layout_height="match_parent">
 
             <Button
-                android:id="@+id/button4"
+                android:id="@+id/pause"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Button" />
+                android:onClick="onClick"
+                android:text="Pause" />
 
             <Button
-                android:id="@+id/button3"
+                android:id="@+id/play"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Button" />
+                android:onClick="onClick"
+                android:text="Play" />
 
             <Button
                 android:id="@+id/button2"
