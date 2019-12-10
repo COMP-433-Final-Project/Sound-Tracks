@@ -38,10 +38,9 @@
                 android:text="Name: "
                 android:textSize="30sp" />
 
-
             <EditText
                 android:id="@+id/name_field"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="textPersonName" />
@@ -55,10 +54,7 @@
                 android:id="@+id/latitude"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Latitude: "
-                android:textSize="20sp" />
-
-
+                android:text="TextView" />
         </TableRow>
 
         <TableRow
@@ -67,35 +63,10 @@
 
             <TextView
                 android:id="@+id/longitude"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Longitude"
-                android:textSize="20sp" />
+                android:text="TextView" />
         </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" >
-            <TextView
-                android:id="@+id/songlist"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Song List: "
-                android:textSize="20sp" />
-
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" >
-
-            <ListView
-                android:id="@+id/list"
-                android:layout_width="match_parent"
-                android:layout_height="500dp"
-                />
-        </TableRow>
-
     </TableLayout>
 
     <LinearLayout
