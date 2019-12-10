@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -11,6 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <receiver android:name=".GeofenceBroadcastReceiver"/>
+        <receiver android:name="GeofenceBroadcastReceiver" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAKA7j0y-l2TDHSUK-hhID0eV4otImejFk" />
