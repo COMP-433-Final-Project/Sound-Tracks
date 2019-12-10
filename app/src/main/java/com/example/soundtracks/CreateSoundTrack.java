@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -20,12 +21,15 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,10 +48,12 @@ public class CreateSoundTrack extends AppCompatActivity {
 
     private PendingIntent geofencePendingIntent;
     private GeofencingClient geofencingClient;
-    public static List geofenceList = new ArrayList();
+    public static List<Geofence> geofenceList = new ArrayList<Geofence>();
+
+    private FusedLocationProviderClient fusedLocationClient;
 
 
-    private static final int GEOFENCE_RADIUS_IN_METERS = 5;
+    private static final int GEOFENCE_RADIUS_IN_METERS = 15;
     private static final int LOCATION_REQUEST_CODE = 1;
 
 
@@ -74,6 +80,25 @@ public class CreateSoundTrack extends AppCompatActivity {
             finish();
         }
         else if(view == mSubmit){
+
+            if(mName.getText().toString().isEmpty()){
+                Toast.makeText(getApplicationContext(), "Please Enter a Name", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if(mLatitude.isEmpty() || mLongitude.isEmpty()){
+                Toast.makeText(getApplicationContext(), "Please Select a Location", Toast.LENGTH_SHORT).show();
+            }
+
+
+            // TODO: Check through database to see if new location is within geofence radius of any existing geofences
+//            for(Geofence geofence : geofenceList){
+//                if(Location.distanceBetween(Double.parseDouble(mLatitude), Double.parseDouble(mLongitude),
+//                geofence.)
+//            }
+
+            //if(mLatitude.)
+
             new Saver(getText(mName), mLatitude, mLongitude, "5").execute();
             SQLiteDatabase db = mDatabase.getReadableDatabase();
             String table = mDatabase.tableToString(db, DataBaseContract.PlayListTable.TABLE_NAME);
@@ -120,6 +145,32 @@ public class CreateSoundTrack extends AppCompatActivity {
 
 
         }else if (view == mCurrentLocation){
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+            fusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+
+                            if(location != null){
+                                Toast.makeText(getApplicationContext(), "latitude is: " + location.getLatitude() + "\n " +
+                                        "longitude is: " + location.getLongitude(), Toast.LENGTH_SHORT).show();
+                                setmLatLng(Double.toString(location.getLatitude()), Double.toString(location.getLongitude()));
+
+
+
+                            }else{
+                                Toast.makeText(getApplicationContext(), "location not obtained", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }).addOnFailureListener(this, new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+
+                    Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_LONG).show();
+                }
+            });
+            Task task = fusedLocationClient.getLastLocation();
 
         }
     }
@@ -197,6 +248,12 @@ public class CreateSoundTrack extends AppCompatActivity {
         builder.addGeofences(geofenceList);
         return builder.build();
     }
+
+    private void setmLatLng(String aLat, String aLong) {
+        mLatitude = aLat;
+        mLongitude = aLong;
+    }
+
 
 
 }
